@@ -17,15 +17,40 @@ function updateButton(){
     toggle.textContent = icon;
 }
 
+function handleChangeUpdate(){
+    video[this.name] = this.value;
+}
+
 function skip(){
     video.currentTime += parseFloat(this.dataset.skip);
+}
+
+function handleProgress(){
+    const progress = (video.currentTime / video.duration) * 100;
+    progressBar.style.flexBasis = `${progress}%`
+}
+
+function scrub(e){
+    const scrubTime = (e.offsetX / progress.offsetWidth) * video.duration;
+    video.currentTime = scrubTime;
 }
 
 //hooking up event listeners
 video.addEventListener('click', togglePlay)
 video.addEventListener('play', updateButton)
 video.addEventListener('pause', updateButton)
+video.addEventListener('timeupdate', handleProgress)
 
 toggle.addEventListener('click',togglePlay)
 
 skipButton.forEach(button => button.addEventListener('click', skip))
+
+ranges.forEach((range) => range.addEventListener('change', handleChangeUpdate));
+ranges.forEach((range) => range.addEventListener('mousemove', handleChangeUpdate));
+
+let mousedown = false
+
+progress.addEventListener('click', scrub)
+progress.addEventListener('mousemove', (e)=> mousedown && scrub(e))
+progress.addEventListener('mousedown', () => mousedown = true)
+progress.addEventListener('mousemove', () => mousedown = false)
